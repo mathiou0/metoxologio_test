@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Contact";
+    var canEdit = false;
+    @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+    {
+        canEdit = true;
+    }
+}
+
+
+<div id="grid"></div>
+
+
+<script>
+    $(function () {
+        // Initialize the Kendo UI DatePicker by calling the kendoDatePicker jQuery plugin
+
+        canEdit = '@(canEdit)' === '@true';
+
+
+        var dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "@Url.Action("Users_Read_Js", "Account")",
+                dataType: "json"
+            }
+        }
+        });
+
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            sortable: true,
+            pageable: true,
+            autobind: false,
+            editable: "inline",
+            dataBound: function () {
+                this.expandRow(this.tbody.find("tr.k-master-row").first());
+            },
+            columns: [
+                
+                {
+                    field: "FirstName",
+                    title: "First Name",
+                    width: "110px"
+                },
+                {
+                    field: "LastName",
+                    title: "Last Name",
+                    width: "110px"
+                },
+                {
+                    field: "UserName",
+                    title: "Username",
+                    width: "110px"
+                },
+                {
+                field: "Email",
+                    title: "Email",
+                width: "110px"
+                }
+            ]
+        });
+        if (canEdit) {
+            $("#grid").kendoGrid.setOptions({
+                toolbar: [{ name: "Create" }],
+                columns: {
+                    command: ["edit", "destroy"], title: "&nbsp;", width: "250px"
+                
+                }
+            });
+           
+          
+                
+        }
+    });
+</script>

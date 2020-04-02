@@ -1,0 +1,94 @@
+﻿@using metoxologio_test.Helpers
+
+@{
+    ViewData["Title"] = "Home Page";
+    var canEdit = false;
+    @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+    {
+        canEdit = true;
+    }
+}
+
+<div class="placeholders mb-2">
+    <div class="row d-flex justify-content-start">
+        <div class="col-md-2 mb-3 placeholder">
+            <img class="img-fluid " alt="200x200" src="~/Images/200.png">
+        </div>
+        <div class="col-md-3">
+            <h2>Lorem ipsum dolor sit amet...</h2>
+            <p>
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
+                galley of type and scrambled it to make a type specimen book.
+            </p>
+            <p>
+                <kendo-button name="PrimaryButton" class="textButton k-primary">Primary Button</kendo-button>
+            </p>
+        </div>
+        <div class="col-md-3">
+            <h2>&nbsp;</h2>
+            <p>
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
+                galley of type and scrambled it to make a type specimen book.
+            </p>
+            <p>
+                <kendo-button name="TextButton" class="textButton">Button</kendo-button>
+            </p>
+        </div>
+        <div class="col-md-3">
+            <h2>&nbsp;</h2>
+            <p>
+                <input id="datepicker" />
+            </p>
+            <p>
+                <kendo-button name="Button" class="textButton">Button</kendo-button>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="text-center">
+            @(Html.Kendo().Grid<ApplicationIdentityUser>
+                ().TestGridAsync("grid",canEdit)
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Id);
+                    columns.Bound(c => c.FirstName);
+                    columns.Bound(c => c.LastName);
+                    columns.Bound(c => c.UserName);
+                    columns.Bound(c => c.Address);
+                    columns.Bound(c => c.Email);
+                    //columns.Command(commands =>
+                    //{
+                    //    if (canEdit)
+                    //        commands.Edit(); // The "edit" command will edit and update data items.
+
+                    //}).Title("Commands").Width(200);
+                })
+                //.ToolBar(toolbar =>
+
+                //    toolbar.Create()
+
+                //) // The "create" command adds new data items.
+                .Editable(editable => editable.Mode(GridEditMode.InLine)) // Use the inline edit mode.
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model =>
+                {
+                    model.Id(c => c.Id); // Specify the property which is the unique identifier of the model.
+                    model.Field(product => product.Id).Editable(false); // Make the ProductID property not editable.
+                })
+                .Create(create => create.Action("Users_Create", "Account")) // Action invoked when the user saves a new data item.
+                .Update(update => update.Action("Users_Update", "Account"))  // Action invoked when the user saves an updated data item.
+                .Read(read => read.Action("Users_Read", "Account"))
+                )
+                .Pageable()
+            )
+
+
+        </div>
+    </div>
+</div>
